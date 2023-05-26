@@ -1,6 +1,7 @@
 import * as simple from "simple-mock";
 import HttpBackend from 'matrix-mock-request';
 import * as tmp from "tmp";
+import { StoreType } from "@matrix-org/matrix-sdk-crypto-nodejs";
 
 import { expectArrayEquals } from "../TestUtils";
 import {
@@ -808,7 +809,7 @@ describe('Intent', () => {
 
         beforeEach(() => {
             storage = new MemoryStorageProvider();
-            cryptoStorage = new RustSdkAppserviceCryptoStorageProvider(tmp.dirSync().name);
+            cryptoStorage = new RustSdkAppserviceCryptoStorageProvider(tmp.dirSync().name, StoreType.Sled);
             options = {
                 homeserverUrl: hsUrl,
                 storage: storage,
