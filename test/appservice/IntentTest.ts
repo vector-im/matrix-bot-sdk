@@ -3,7 +3,6 @@ import HttpBackend from 'matrix-mock-request';
 import * as tmp from "tmp";
 import { StoreType } from "@matrix-org/matrix-sdk-crypto-nodejs";
 
-import { expectArrayEquals } from "../TestUtils";
 import {
     Appservice,
     IAppserviceCryptoStorageProvider,
@@ -274,7 +273,6 @@ describe('Intent', () => {
             const botUserId = "@bot:example.org";
             const asToken = "s3cret";
             const hsUrl = "https://localhost";
-            const roomIds = ["!a:example.org", "!b:example.org"];
             const targetRoomId = "!c:example.org";
             const appservice = <Appservice>{ botUserId: botUserId };
             const storage = new MemoryStorageProvider();
@@ -303,7 +301,6 @@ describe('Intent', () => {
             const botUserId = "@bot:example.org";
             const asToken = "s3cret";
             const hsUrl = "https://localhost";
-            const roomIds = ["!a:example.org", "!b:example.org"];
             const targetRoomId = "!c:example.org";
             const appservice = <Appservice>{ botUserId: botUserId };
             const storage = new MemoryStorageProvider();
