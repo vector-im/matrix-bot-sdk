@@ -34,10 +34,6 @@ export class Intent {
 
     private client: MatrixClient;
     private unstableApisInstance: UnstableAppserviceApis;
-    /**
-     * If initialized, contains a set of rooms we know that we're joined to.
-     */
-    private knownJoinedRooms: Set<string>|undefined;
     private cryptoSetupPromise: Promise<void>;
 
     /**
@@ -172,7 +168,7 @@ export class Intent {
                     }
 
                     // Now set up crypto
-                    await this.client.crypto.prepare(await this.refreshJoinedRooms());
+                    await this.client.crypto.prepare(await this.getJoinedRooms());
 
                     this.appservice.on("room.event", (roomId, event) => {
                         this.client.crypto.onRoomEvent(roomId, event);
@@ -194,8 +190,7 @@ export class Intent {
      */
     @timedIntentFunctionCall()
     public async getJoinedRooms(): Promise<string[]> {
-        await this.ensureRegistered();
-        return await this.refreshJoinedRooms();
+        return await this.client.getJoinedRooms();
     }
 
     /**
@@ -207,9 +202,7 @@ export class Intent {
     @timedIntentFunctionCall()
     public async leaveRoom(roomId: string, reason?: string): Promise<any> {
         await this.ensureRegistered();
-        return this.client.leaveRoom(roomId, reason).then(async () => {
-            this.knownJoinedRooms?.delete(roomId);
-        });
+        return this.client.leaveRoom(roomId, reason);
     }
 
     /**
@@ -220,10 +213,7 @@ export class Intent {
     @timedIntentFunctionCall()
     public async joinRoom(roomIdOrAlias: string): Promise<string> {
         await this.ensureRegistered();
-        return this.client.joinRoom(roomIdOrAlias).then(async roomId => {
-            this.knownJoinedRooms?.add(roomId);
-            return roomId;
-        });
+        return this.client.joinRoom(roomIdOrAlias);
     }
 
     /**
@@ -268,36 +258,19 @@ export class Intent {
      */
     @timedIntentFunctionCall()
     public async ensureJoined(roomId: string) {
-        if (!this.knownJoinedRooms) {
-            await this.refreshJoinedRooms();
-        }
-
-        if (this.knownJoinedRooms!.has(roomId)) {
-            return;
-        }
-
         const returnedRoomId = await this.client.joinRoom(roomId);
-        this.knownJoinedRooms!.add(returnedRoomId);
         return returnedRoomId;
     }
 
     /**
      * Refreshes which rooms the user is joined to, potentially saving time on
      * calls like ensureJoined()
+     * @deprecated There is no longer a joined rooms cache, use `getJoinedRooms()` instead
      * @returns {Promise<string[]>} Resolves to the joined room IDs for the user.
      */
     @timedIntentFunctionCall()
     public async refreshJoinedRooms(): Promise<string[]> {
-        this.knownJoinedRooms = new Set(await this.client.getJoinedRooms());
-        return Array.from(this.knownJoinedRooms); // clone
-    }
-
-    onRoomJoin(roomId: string) {
-        this.knownJoinedRooms?.add(roomId);
-    }
-
-    onRoomLeave(roomId: string) {
-        this.knownJoinedRooms?.delete(roomId);
+        return await this.getJoinedRooms();
     }
 
     /**

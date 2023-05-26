@@ -635,11 +635,9 @@ export class Appservice extends EventEmitter {
 
         const targetMembership = event["content"]["membership"];
         if (targetMembership === "join") {
-            intent.onRoomJoin(event["room_id"]);
             this.emit("room.join", event["room_id"], event);
             await intent.underlyingClient.crypto?.onRoomJoin(event["room_id"]);
         } else if (targetMembership === "ban" || targetMembership === "leave") {
-            intent.onRoomLeave(event["room_id"]);
             this.emit("room.leave", event["room_id"], event);
         } else if (targetMembership === "invite") {
             this.emit("room.invite", event["room_id"], event);
