@@ -190,6 +190,7 @@ export class Intent {
      */
     @timedIntentFunctionCall()
     public async getJoinedRooms(): Promise<string[]> {
+        await this.ensureRegistered();
         return await this.client.getJoinedRooms();
     }
 
