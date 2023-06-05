@@ -256,6 +256,7 @@ export class Intent {
      * Ensures the user is joined to the given room
      * @param {string} roomId The room ID to join
      * @returns {Promise<any>} Resolves when complete
+     * @deprecated Use `joinRoom()` instead
      */
     @timedIntentFunctionCall()
     public async ensureJoined(roomId: string) {
