@@ -15,7 +15,9 @@
   "scripts": {
     "prepublishOnly": "yarn build",
     "docs": "jsdoc -c jsdoc.json -P package.json -u docs/tutorials",
-    "build": "tsc --listEmittedFiles -p tsconfig-release.json",
+    "build": "tsc -b",
+    "build:dev": "tsc -b tsconfig-dev.json",
+    "clean": "yarn build:dev --clean",
     "lint": "eslint \"{src,test,examples}/**/*.ts\"",
     "test": "jest",
     "build:examples": "tsc -p tsconfig-examples.json",

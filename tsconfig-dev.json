@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig-release.json",
+  "compilerOptions": {
+    "declarationMap": true
+  }
+}

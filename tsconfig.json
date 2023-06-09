@@ -1,20 +1,5 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es2020",
-    "noImplicitAny": false,
-    "sourceMap": true,
-    "outDir": "./lib",
-    "declaration": true,
-    "types": [
-      "node",
-      "express",
-      "jest"
-    ]
-  },
+  "extends": "./tsconfig-release.json",
   "include": [
     "./src/**/*",
     "./test/**/*"

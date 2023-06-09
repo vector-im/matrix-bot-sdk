@@ -9,6 +9,7 @@
     "sourceMap": true,
     "outDir": "./lib",
     "declaration": true,
+    "listEmittedFiles": true,
     "types": [
       "node",
       "express",

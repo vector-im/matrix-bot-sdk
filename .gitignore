@@ -1,5 +1,16 @@
+# Editor project and workspace files
 .idea/
+.project
+.settings/
+.externalToolBuilders/
+
+# Editor temporaries
+.*.sw?
+
+# Typescript
 lib/
+
+# Examples output
 examples/storage/
 
 # Logs
