@@ -608,11 +608,15 @@ export class MatrixClient extends EventEmitter {
      */
     @timedMatrixClientFunctionCall()
     public async getUserId(): Promise<string> {
-        if (this.userId) return this.userId;
+        if (this.userId) {
+            LogService.debug("MatrixClientLite", `known user ID = ${this.userId}`, Error("trace").stack);
+            return this.userId;
+        }
 
         // getWhoAmI should populate `this.userId` for us
         await this.getWhoAmI();
 
+        LogService.debug("MatrixClientLite", `found user ID = ${this.userId}`, Error("trace").stack);
         return this.userId;
     }
 
