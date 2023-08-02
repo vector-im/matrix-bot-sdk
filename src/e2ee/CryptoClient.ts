@@ -26,6 +26,7 @@ import { EncryptedFile } from "../models/events/MessageEvent";
 import { RustSdkCryptoStorageProvider } from "../storage/RustSdkCryptoStorageProvider";
 import { RustEngine, SYNC_LOCK_NAME } from "./RustEngine";
 import { MembershipEvent } from "../models/events/MembershipEvent";
+import { IKeyBackupInfoRetrieved } from "../models/KeyBackup";
 
 /**
  * Manages encryption for a MatrixClient. Get an instance from a MatrixClient directly
@@ -168,12 +169,13 @@ export class CryptoClient {
             leftDeviceLists.map(u => new UserId(u)));
 
         await this.engine.lock.acquire(SYNC_LOCK_NAME, async () => {
-            const syncResp = await this.engine.machine.receiveSyncChanges(deviceMessages, deviceLists, otkCounts, unusedFallbackKeyAlgs);
-            const decryptedToDeviceMessages = JSON.parse(syncResp);
-            if (Array.isArray(decryptedToDeviceMessages)) {
-                for (const msg of decryptedToDeviceMessages) {
+            const syncResp = JSON.parse(await this.engine.machine.receiveSyncChanges(deviceMessages, deviceLists, otkCounts, unusedFallbackKeyAlgs));
+            if (Array.isArray(syncResp) && syncResp.length === 2 && Array.isArray(syncResp[0])) {
+                for (const msg of syncResp[0] as IToDeviceMessage[]) {
                     this.client.emit("to_device.decrypted", msg);
                 }
+            } else {
+                LogService.error("CryptoClient", "OlmMachine.receiveSyncChanges did not return an expected value of [to-device events, room key changes]");
             }
 
             await this.engine.run();
@@ -284,4 +286,30 @@ export class CryptoClient {
         const decrypted = Attachment.decrypt(encrypted);
         return Buffer.from(decrypted);
     }
+
+    /**
+     * Enable backing up of room keys.
+     * @param {IKeyBackupInfoRetrieved} info The configuration for key backup behaviour,
+     * as returned by {@link MatrixClient#getKeyBackupVersion}.
+     * @returns {Promise<void>} Resolves when complete.
+     */
+    public async enableKeyBackup(info: IKeyBackupInfoRetrieved): Promise<void> {
+        this.client.on("to_device.decrypted", this.onToDeviceMessage);
+        await this.engine.enableKeyBackup(info);
+        this.engine.backupRoomKeys();
+    }
+
+    /**
+     * Disable backing up of room keys.
+     */
+    public disableKeyBackup(): void {
+        this.engine.disableKeyBackup();
+        this.client.removeListener("to_device.decrypted", this.onToDeviceMessage);
+    }
+
+    private readonly onToDeviceMessage = (msg: IToDeviceMessage): void => {
+        if (msg.type === "m.room_key") {
+            this.engine.backupRoomKeys();
+        }
+    };
 }
