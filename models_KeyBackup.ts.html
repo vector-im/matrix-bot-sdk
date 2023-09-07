@@ -115,6 +115,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { IJsonType } from "../helpers/Types";
 import { Signed } from "./Crypto";
+import { RoomEncryptionAlgorithm } from "./events/EncryptionEvent";
 
 /**
  * The kinds of key backup encryption algorithms allowed by the spec.
@@ -162,6 +163,18 @@ export interface IKeyBackupUpdateResponse {
 export type IKeyBackupInfoRetrieved = IKeyBackupInfo &amp; IKeyBackupVersion &amp; IKeyBackupUpdateResponse;
 
 export type IKeyBackupInfoUpdate = IKeyBackupInfo &amp; Partial&lt;IKeyBackupVersion>;
+
+export interface IMegolmSessionDataExport {
+    algorithm: RoomEncryptionAlgorithm.MegolmV1AesSha2;
+    room_id: string;
+    sender_key: string;
+    session_id: string;
+    session_key: string;
+    sender_claimed_keys: {
+        [algorithm: string]: string;
+    };
+    forwarding_curve25519_key_chain: string[];
+}
 </code></pre>
         </article>
     </section>
