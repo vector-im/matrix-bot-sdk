@@ -339,7 +339,7 @@ export class Appservice extends EventEmitter {
      * Gets the express app instance which is serving requests. Not recommended for
      * general usage, but may be used to append routes to the web server.
      */
-    public get expressAppInstance() {
+    public get expressAppInstance(): express.Express {
         return this.app;
     }
 
