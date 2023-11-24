@@ -16,6 +16,7 @@
     "access": "public"
   },
   "scripts": {
+    "install": "yarn build",
     "prepare": "yarn build",
     "prepublishOnly": "yarn build",
     "docs": "jsdoc -c jsdoc.json -P package.json -u docs/tutorials",
