@@ -1648,7 +1648,7 @@ export class MatrixClient extends EventEmitter {
             return this.contentScannerInstance.downloadContent(mxcUrl, allowRemote);
         }
         const { domain, mediaId } = MXCUrl.parse(mxcUrl);
-        const path = `/_matrix/media/v3/download/${domain}/${mediaId}`;
+        const path = `/_matrix/media/v3/download/${encodeURIComponent(domain)}/${encodeURIComponent(mediaId)}`;
         const res = await this.doRequest("GET", path, { allow_remote: allowRemote }, null, null, true, null, true);
         return {
             data: res.body,
