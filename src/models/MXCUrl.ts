@@ -3,14 +3,15 @@ export class MXCUrl {
         if (!mxcUrl?.toLowerCase()?.startsWith("mxc://")) {
             throw Error("Not a MXC URI");
         }
-        const [domain, ...mediaId] = mxcUrl.slice("mxc://".length).split("/");
+        const [domain, ...mediaIdParts] = mxcUrl.slice("mxc://".length).split("/");
         if (!domain) {
             throw Error("missing domain component");
         }
-        if (!mediaId?.length) {
+        const mediaId = mediaIdParts?.join('/') ?? undefined;
+        if (!mediaId) {
             throw Error("missing mediaId component");
         }
-        return new MXCUrl(domain, mediaId.join('/'));
+        return new MXCUrl(domain, mediaId);
     }
 
     constructor(public domain: string, public mediaId: string) { }
