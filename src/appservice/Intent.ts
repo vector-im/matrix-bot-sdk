@@ -41,8 +41,9 @@ export class Intent {
      * @param {IAppserviceOptions} options The options for the application service.
      * @param {string} impersonateUserId The user ID to impersonate.
      * @param {Appservice} appservice The application service itself.
+     * @param {string=} impersonateDeviceId Optional device ID to impersonate with.
      */
-    constructor(private options: IAppserviceOptions, private impersonateUserId: string, private appservice: Appservice) {
+    constructor(private options: IAppserviceOptions, private impersonateUserId: string, private appservice: Appservice, private impersonateDeviceId?: string) {
         this.metrics = new Metrics(appservice.metrics);
         this.storage = options.storage;
         this.cryptoStorage = options.cryptoStorage;
@@ -65,7 +66,7 @@ export class Intent {
         this.client.metrics = new Metrics(this.appservice.metrics); // Metrics only go up by one parent
         this.unstableApisInstance = new UnstableAppserviceApis(this.client);
         if (this.impersonateUserId !== this.appservice.botUserId) {
-            this.client.impersonateUserId(this.impersonateUserId);
+            this.client.impersonateUserId(this.impersonateUserId, this.impersonateDeviceId);
         }
         if (this.options.joinStrategy) {
             this.client.setJoinStrategy(this.options.joinStrategy);

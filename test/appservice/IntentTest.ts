@@ -34,6 +34,7 @@ describe('Intent', () => {
         expect(intent.userId).toEqual(userId);
         expect(intent.underlyingClient).toBeDefined();
         expect((<any>intent.underlyingClient).impersonatedUserId).toBeUndefined();
+        expect((<any>intent.underlyingClient).impersonatedDeviceId).toBeUndefined();
         expect((<any>intent.underlyingClient).accessToken).toEqual(asToken);
         expect((<any>intent.underlyingClient).homeserverUrl).toEqual(hsUrl);
     });
@@ -56,6 +57,7 @@ describe('Intent', () => {
         expect(intent.userId).toEqual(userId);
         expect(intent.underlyingClient).toBeDefined();
         expect((<any>intent.underlyingClient).impersonatedUserId).toBeUndefined();
+        expect((<any>intent.underlyingClient).impersonatedDeviceId).toBeUndefined();
         expect((<any>intent.underlyingClient).accessToken).toEqual(asToken);
         expect((<any>intent.underlyingClient).homeserverUrl).toEqual(hsUrl);
         expect((<any>intent.underlyingClient).joinStrategy).toEqual(joinStrategy);
@@ -78,6 +80,30 @@ describe('Intent', () => {
         expect(intent.userId).toEqual(userId);
         expect(intent.underlyingClient).toBeDefined();
         expect((<any>intent.underlyingClient).impersonatedUserId).toEqual(userId);
+        expect((<any>intent.underlyingClient).impersonatedDeviceId).toBeUndefined();
+        expect((<any>intent.underlyingClient).accessToken).toEqual(asToken);
+        expect((<any>intent.underlyingClient).homeserverUrl).toEqual(hsUrl);
+    });
+
+    it('should prepare the underlying client for an impersonated user with specific device', async () => {
+        const userId = "@someone:example.org";
+        const botUserId = "@bot:example.org";
+        const botDeviceId = "DEVICE";
+        const asToken = "s3cret";
+        const hsUrl = "https://localhost";
+        const appservice = <Appservice>{ botUserId: botUserId };
+        const options = <IAppserviceOptions>{
+            homeserverUrl: hsUrl,
+            registration: {
+                as_token: asToken,
+            },
+        };
+
+        const intent = new Intent(options, userId, appservice, botDeviceId);
+        expect(intent.userId).toEqual(userId);
+        expect(intent.underlyingClient).toBeDefined();
+        expect((<any>intent.underlyingClient).impersonatedUserId).toEqual(userId);
+        expect((<any>intent.underlyingClient).impersonatedDeviceId).toEqual(botDeviceId);
         expect((<any>intent.underlyingClient).accessToken).toEqual(asToken);
         expect((<any>intent.underlyingClient).homeserverUrl).toEqual(hsUrl);
     });
@@ -101,6 +127,7 @@ describe('Intent', () => {
         expect(intent.userId).toEqual(userId);
         expect(intent.underlyingClient).toBeDefined();
         expect((<any>intent.underlyingClient).impersonatedUserId).toEqual(userId);
+        expect((<any>intent.underlyingClient).impersonatedDeviceId).toBeUndefined();
         expect((<any>intent.underlyingClient).accessToken).toEqual(asToken);
         expect((<any>intent.underlyingClient).homeserverUrl).toEqual(hsUrl);
         expect((<any>intent.underlyingClient).joinStrategy).toEqual(joinStrategy);
