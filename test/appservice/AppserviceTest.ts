@@ -247,6 +247,34 @@ describe('Appservice', () => {
         const intent = appservice.botIntent;
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual(appservice.botUserId);
+        expect(intent.deviceId).toBeUndefined();
+    });
+
+    it('should return an intent for the bot user with specific device', async () => {
+        const appservice = new Appservice({
+            port: 0,
+            bindAddress: '',
+            homeserverName: 'example.org',
+            homeserverUrl: 'https://localhost',
+            registration: {
+                as_token: "",
+                hs_token: "",
+                sender_localpart: "_bot_",
+                namespaces: {
+                    users: [{ exclusive: true, regex: "@_prefix_.*:.+" }],
+                    rooms: [],
+                    aliases: [],
+                },
+            },
+            intentOptions: {
+                botDeviceId: 'DEVICE',
+            },
+        });
+
+        const intent = appservice.botIntent;
+        expect(intent).toBeDefined();
+        expect(intent.userId).toEqual(appservice.botUserId);
+        expect(intent.deviceId).toEqual(appservice.botDeviceId);
     });
 
     it('should return a client for the bot user', async () => {
@@ -318,6 +346,7 @@ describe('Appservice', () => {
         const intent = appservice.getIntent("_prefix_testing");
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual("@_prefix_testing:example.org");
+        expect(intent.deviceId).toBeUndefined();
     });
 
     it('should return an intent for any namespaced suffix', async () => {
@@ -341,6 +370,7 @@ describe('Appservice', () => {
         const intent = appservice.getIntentForSuffix("testing");
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual("@_prefix_testing:example.org");
+        expect(intent.deviceId).toBeUndefined();
     });
 
     it('should return an intent for any user ID', async () => {
@@ -368,21 +398,25 @@ describe('Appservice', () => {
         intent = appservice.getIntentForUserId(userId);
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual(userId);
+        expect(intent.deviceId).toBeUndefined();
 
         userId = "@_prefix_testing:example.org";
         intent = appservice.getIntentForUserId(userId);
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual(userId);
+        expect(intent.deviceId).toBeUndefined();
 
         userId = "@_bot_:example.org";
         intent = appservice.getIntentForUserId(userId);
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual(userId);
+        expect(intent.deviceId).toBeUndefined();
 
         userId = "@test_prefix_:example.org";
         intent = appservice.getIntentForUserId(userId);
         expect(intent).toBeDefined();
         expect(intent.userId).toEqual(userId);
+        expect(intent.deviceId).toBeUndefined();
     });
 
     it('should emit an event for a created intent', async () => {
@@ -422,6 +456,7 @@ describe('Appservice', () => {
             expect(intentSpy.callCount).toBe(index+1);
             expect(intent).toBeDefined();
             expect(intent.userId).toEqual(userId);
+            expect(intent.deviceId).toBeUndefined();
             expect(intent).toBe(newIntent);
         });
     });

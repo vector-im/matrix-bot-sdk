@@ -81,6 +81,13 @@ export class Intent {
     }
 
     /**
+     * Gets the device ID this intent is for, if any.
+     */
+    public get deviceId(): string|undefined {
+        return this.impersonateDeviceId;
+    }
+
+    /**
      * Gets the underlying MatrixClient that powers this Intent.
      */
     public get underlyingClient(): MatrixClient {

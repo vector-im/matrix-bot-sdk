@@ -209,6 +209,11 @@ export interface IAppserviceOptions {
          * Note that the appservice bot account is considered an intent.
          */
         encryption?: boolean;
+
+        /**
+         * Device ID for the bot user.
+         */
+        botDeviceId?: string;
     };
 }
 
@@ -363,11 +368,18 @@ export class Appservice extends EventEmitter {
     }
 
     /**
+     * Get the application service's "bot" user device ID.
+     */
+    public get botDeviceId(): string {
+        return this.options.intentOptions?.botDeviceId;
+    }
+
+    /**
      * Get the application service's "bot" Intent (the sender_localpart).
      * @returns {Intent} The intent for the application service itself.
      */
     public get botIntent(): Intent {
-        return this.getIntentForUserId(this.botUserId);
+        return this.getIntentForUserId(this.botUserId, this.botDeviceId);
     }
 
     /**
@@ -457,12 +469,13 @@ export class Appservice extends EventEmitter {
     /**
      * Gets an Intent for a given user ID.
      * @param {string} userId The user ID to get an Intent for.
+     * @param {string=} deviceId The user device ID to get an Intent for.
      * @returns {Intent} An Intent for the user.
      */
-    public getIntentForUserId(userId: string): Intent {
+    public getIntentForUserId(userId: string, deviceId?: string): Intent {
         let intent: Intent = this.intentsCache.get(userId);
         if (!intent) {
-            intent = new Intent(this.options, userId, this);
+            intent = new Intent(this.options, userId, this, deviceId);
             this.intentsCache.set(userId, intent);
             this.emit("intent.new", intent);
             if (this.options.intentOptions.encryption) {
