@@ -13,6 +13,7 @@ import { Appservice, IAppserviceOptions } from "./Appservice";
 import { timedIntentFunctionCall } from "../metrics/decorators";
 import { UnstableAppserviceApis } from "./UnstableAppserviceApis";
 import { MatrixError } from "../models/MatrixError";
+import { randomUUID } from "crypto";
 
 /**
  * An Intent is an intelligent client that tracks things like the user's membership
@@ -162,9 +163,17 @@ export class Intent {
                     }
 
                     if (!prepared) {
-                        // XXX: We work around servers that don't support device_id impersonation
-                        const accessToken = await Promise.resolve(storage?.readValue("accessToken"));
-                        if (!accessToken) {
+                        let accessToken;
+                        if (this.options.registration["io.element.msc4190"]) {
+                            // Generate a random device ID and create it
+                            deviceId = randomUUID();
+                            // Make sure the device is registered
+                            await this.client.doRequest("PUT", `/_matrix/client/v3/devices/${deviceId}`, null, {});
+                            this.makeClient(true);
+                            this.client.impersonateUserId(this.userId, deviceId);
+                            prepared = true;
+                        } else if (!(accessToken = await Promise.resolve(storage?.readValue("accessToken")))) {
+                            // XXX: We work around servers that don't support device_id impersonation
                             const loginBody = {
                                 type: "m.login.application_service",
                                 identifier: {
