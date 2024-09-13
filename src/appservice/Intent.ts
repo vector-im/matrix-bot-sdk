@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import {
     DeviceKeyAlgorithm,
     extractRequestError,
@@ -13,7 +15,6 @@ import { Appservice, IAppserviceOptions } from "./Appservice";
 import { timedIntentFunctionCall } from "../metrics/decorators";
 import { UnstableAppserviceApis } from "./UnstableAppserviceApis";
 import { MatrixError } from "../models/MatrixError";
-import { randomUUID } from "crypto";
 
 /**
  * An Intent is an intelligent client that tracks things like the user's membership
