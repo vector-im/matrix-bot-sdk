@@ -1595,9 +1595,9 @@ export class MatrixClient extends EventEmitter {
 
     private async getMediaEndpointPrefix() {
         if (await this.doesServerSupportVersion('v1.11')) {
-            return `${this.homeserverUrl}/_matrix/client/v1/media`;
+            return `/_matrix/client/v1/media`;
         }
-        return `${this.homeserverUrl}/_matrix/media/v3`;
+        return `/_matrix/media/v3`;
     }
 
     /**
@@ -1608,7 +1608,7 @@ export class MatrixClient extends EventEmitter {
     public async mxcToHttp(mxc: string): Promise<string> {
         const { domain, mediaId } = MXCUrl.parse(mxc);
         const endpoint = await this.getMediaEndpointPrefix();
-        return `${endpoint}/download/${encodeURIComponent(domain)}/${encodeURIComponent(mediaId)}`;
+        return `${this.homeserverUrl}${endpoint}/download/${encodeURIComponent(domain)}/${encodeURIComponent(mediaId)}`;
     }
 
     /**
@@ -1636,8 +1636,7 @@ export class MatrixClient extends EventEmitter {
     @timedMatrixClientFunctionCall()
     public async uploadContent(data: Buffer, contentType = "application/octet-stream", filename: string = null): Promise<string> {
         // TODO: Make doRequest take an object for options
-        const endpoint = await this.getMediaEndpointPrefix();
-        return this.doRequest("POST", `${endpoint}/upload`, { filename: filename }, data, 60000, false, contentType)
+        return this.doRequest("POST", "/_matrix/media/v3/upload", { filename: filename }, data, 60000, false, contentType)
             .then(response => response["content_uri"]);
     }
 

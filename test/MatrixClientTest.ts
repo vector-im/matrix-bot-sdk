@@ -5717,7 +5717,7 @@ describe('MatrixClient', () => {
             Buffer.isBuffer = <any>(i => i === data);
 
             // noinspection TypeScriptValidateJSTypes
-            http.when("POST", "/_matrix/client/v1/media/upload").respond(200, (path, content, req) => {
+            http.when("POST", "/_matrix/media/v3/upload").respond(200, (path, content, req) => {
                 expect(content).toBeDefined();
                 expect(req.queryParams.filename).toEqual(filename);
                 expect(req.headers["Content-Type"]).toEqual(contentType);
@@ -5740,7 +5740,7 @@ describe('MatrixClient', () => {
             Buffer.isBuffer = <any>(i => i === data);
 
             // noinspection TypeScriptValidateJSTypes
-            http.when("POST", "/_matrix/client/v1/media/upload").respond(200, (path, content, req) => {
+            http.when("POST", "/_matrix/media/v3/upload").respond(200, (path, content, req) => {
                 expect(content).toBeDefined();
                 expect(req.queryParams.filename).toEqual(filename);
                 expect(req.headers["Content-Type"]).toEqual(contentType);
@@ -5798,7 +5798,7 @@ describe('MatrixClient', () => {
             });
 
             // noinspection TypeScriptValidateJSTypes
-            http.when("POST", "/_matrix/client/v1/media/upload").respond(200, (path, content, req) => {
+            http.when("POST", "/_matrix/media/v3/upload").respond(200, (path, content, req) => {
                 expect(content).toBeDefined();
                 // HACK: We know the mock library will return JSON
                 expect(req.headers["Content-Type"]).toEqual("application/json");
