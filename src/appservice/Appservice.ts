@@ -135,6 +135,14 @@ export interface IAppserviceRegistration {
      */
     "de.sorunome.msc2409.push_ephemeral"?: boolean;
 
+    /**
+     * ** Experimental **
+     *
+     * Should the AS use the new device management APIs. Optional.
+     * @see https://github.com/matrix-org/matrix-spec-proposals/pull/4190
+     */
+    "io.element.msc4190"?: boolean;
+
     // not interested in other options
 }
 
