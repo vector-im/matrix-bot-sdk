@@ -838,7 +838,7 @@ export class MatrixClient extends EventEmitter {
                 }
             }
             if (!leaveEvent) {
-                LogService.warn("MatrixClientLite", "Left room " + roomId + " without receiving an event");
+                LogService.error("MatrixClientLite", "Left room " + roomId + " without receiving an event");
                 continue;
             }
 
