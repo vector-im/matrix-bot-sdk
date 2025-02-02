@@ -1457,6 +1457,35 @@ describe('MatrixClient', () => {
             expect(spy.callCount).toBe(1);
         });
 
+        it('should process banned rooms as left rooms', async () => {
+            const { client: realClient } = createTestClient();
+            const client = <ProcessSyncClient>(<any>realClient);
+
+            const userId = "@syncing:example.org";
+            const roomId = "!testing:example.org";
+            const events = [
+                {
+                    type: "m.room.member",
+                    state_key: userId,
+                    unsigned: { age: 0 },
+                    content: { membership: "ban" },
+                },
+            ];
+
+            client.userId = userId;
+
+            const spy = simple.stub().callFn((rid, ev) => {
+                expect(ev).toMatchObject(events[0]);
+                expect(rid).toEqual(roomId);
+            });
+            realClient.on("room.leave", spy);
+
+            const roomsObj = {};
+            roomsObj[roomId] = { timeline: { events: events } };
+            await client.processSync({ rooms: { leave: roomsObj } });
+            expect(spy.callCount).toBe(1);
+        });
+
         it('should process left rooms account data', async () => {
             const { client: realClient } = createTestClient();
             const client = <ProcessSyncClient>(<any>realClient);
