@@ -827,17 +827,16 @@ export class MatrixClient extends EventEmitter {
             for (const event of room['timeline']['events']) {
                 if (event['type'] !== 'm.room.member') continue;
                 if (event['state_key'] !== await this.getUserId()) continue;
-
-                const membership = event["content"]?.["membership"];
-                if (membership !== "leave" && membership !== "ban") continue;
-
-                const oldAge = leaveEvent && leaveEvent['unsigned'] && leaveEvent['unsigned']['age'] ? leaveEvent['unsigned']['age'] : 0;
-                const newAge = event['unsigned'] && event['unsigned']['age'] ? event['unsigned']['age'] : 0;
-                if (leaveEvent && oldAge < newAge) continue;
-
-                leaveEvent = event;
+                switch (event["content"]?.["membership"]) {
+                    case "leave":
+                    case "ban": {
+                        const oldAge = leaveEvent && leaveEvent['unsigned'] && leaveEvent['unsigned']['age'] ? leaveEvent['unsigned']['age'] : 0;
+                        const newAge = event['unsigned'] && event['unsigned']['age'] ? event['unsigned']['age'] : 0;
+                        if (leaveEvent && oldAge < newAge) continue;
+                        leaveEvent = event;
+                    }
+                }
             }
-
             if (!leaveEvent) {
                 LogService.warn("MatrixClientLite", "Left room " + roomId + " without receiving an event");
                 continue;
